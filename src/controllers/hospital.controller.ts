@@ -16,7 +16,7 @@ const router = Router();
 // ============
 
 router.post('/',body_hospital_validations, validation_handler, async(req: Request, res: Response) => {
-    const {name}= req.body;
+    const {name, numeroPacientesActivos, cantidadMaximaPacientes, cantidadPersonal}= req.body;
     try{
         let hospital = await Hospital.findOne({name});
         if(hospital){
@@ -25,7 +25,10 @@ router.post('/',body_hospital_validations, validation_handler, async(req: Reques
         }else{
 
             hospital = new Hospital({
-                name
+                name,
+                numeroPacientesActivos, 
+                cantidadMaximaPacientes, 
+                cantidadPersonal
             });
 
             await hospital.save();
@@ -36,12 +39,9 @@ router.post('/',body_hospital_validations, validation_handler, async(req: Reques
                 }
             }
 
-            jwt.sign(payload, config.get('jwt_secret'), {expiresIn: 3600}, (err, token) => {
-                if(err) throw err;
-                res.status(200).json({
-                    data: {token},
-                    msj: 'hospital Created'
-                });
+            res.status(200).json({
+                data: {payload},
+                msj: 'hospital Created'
             });
         }
     }catch(err){
